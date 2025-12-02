@@ -5,16 +5,23 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface PriceHistoryRepository extends JpaRepository<PriceHistory, Long> {
 
-    // 특정 재료의 최근 N일 기록 (예: 최근 30일 가격 분석)
+    // 원재료 ID 기준 최근 30일
     List<PriceHistory> findTop30ByRawMaterialIdOrderByPriceDateDesc(Long rawMaterialId);
 
-    // 특정 기간 동안의 가격 이력
+    // 기간 조회
     List<PriceHistory> findAllByRawMaterialIdAndPriceDateBetween(
             Long rawMaterialId,
             LocalDate start,
             LocalDate end
     );
+
+    // 🔥 (AI 예측용) productName 기준 최근 30일
+    List<PriceHistory> findTop30ByProductNameOrderByPriceDateDesc(String productName);
+
+    // 가장 최신 1건
+    Optional<PriceHistory> findTop1ByProductNameOrderByPriceDateDesc(String productName);
 }

@@ -1,37 +1,51 @@
 package com.naengjang_goat.inventory_system.ai.service;
 
-import com.naengjang_goat.inventory_system.ai.dto.OrderRecommendResponse;
-import com.naengjang_goat.inventory_system.entity.Stock;
-import com.naengjang_goat.inventory_system.repository.StockRepository;
+import com.naengjang_goat.inventory_system.ai.dto.PriceAnalysisResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class AiOrderService {
 
     private final AiForecastService forecastService;
-    private final StockRepository stockRepository;
 
-    public OrderRecommendResponse recommend(String productName) {
+    /**
+     * 발주 추천 로직
+     */
+    public Map<String, Object> recommend(String productName) {
 
-        var forecast = forecastService.predictPrice(productName);
+        // 분석 데이터 기반 추천
+        PriceAnalysisResponse analysis = forecastService.analyzePrice(productName);
 
-        Stock stock = stockRepository.findByProductName(productName);
+        Map<String, Object> result = new HashMap<>();
 
-        int currentStock = (stock == null) ? 0 : stock.getQuantity();
+        // 기본 분석 정보
+        result.put("productName", productName);
+        result.put("currentPrice", analysis.getCurrentPrice());
+        result.put("avg7", analysis.getAvg7());
+        result.put("avg30", analysis.getAvg30());
+        result.put("rate7", analysis.getRate7());
+        result.put("rate30", analysis.getRate30());
+        result.put("dayChangePercent", analysis.getDayChangePercent());
+        result.put("risk", analysis.getRisk());
 
-        int expectedSales = 20;
+        // 추천 문구
+        String recommendation;
 
-        int quantityToOrder = expectedSales - currentStock;
-        boolean shouldOrder = quantityToOrder > 0;
-        boolean priceWillIncrease = forecast.getPredictedPrice() > forecast.getAvg7();
+        if ("HIGH".equals(analysis.getRisk())) {
+            recommendation = "⚠️ 최근 가격 변동성이 큽니다. 최소 발주를 권장합니다.";
+        } else if ("MID".equals(analysis.getRisk())) {
+            recommendation = "📉 가격이 조금 불안정합니다. 적정량만 발주하세요.";
+        } else {
+            recommendation = "✅ 가격이 안정적입니다. 필요한 만큼 발주해도 좋습니다.";
+        }
 
-        return new OrderRecommendResponse(
-                productName,
-                shouldOrder,
-                Math.max(0, quantityToOrder),
-                priceWillIncrease
-        );
+        result.put("recommendation", recommendation);
+
+        return result;
     }
 }
