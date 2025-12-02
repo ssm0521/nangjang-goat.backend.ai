@@ -12,7 +12,7 @@ import java.util.concurrent.Executors;
 class InventoryServiceTest {
 
     @Autowired
-    private InventoryService inventoryService;
+    private com.naengjang_goat.inventory_system.inventory.service.InventoryService inventoryService;
 
     @Test
     void 동시에_재고차감_테스트() throws InterruptedException {

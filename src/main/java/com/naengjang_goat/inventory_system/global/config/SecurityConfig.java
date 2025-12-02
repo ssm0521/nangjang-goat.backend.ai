@@ -68,7 +68,7 @@ public class SecurityConfig {
                 // 3. HTTP 요청 경로별 접근 권한 설정
                 .authorizeHttpRequests(auth -> auth
                         // '/api/users/signup'과 '/api/users/login' 경로는 인증 없이 누구나 접근 허용
-                        .requestMatchers("/api/users/signup", "/api/users/login").permitAll()
+                        .requestMatchers("/api/users/signup", "/api/users/login", "/api/ai/forecast").permitAll()
                         // 그 외의 모든 요청은 반드시 인증(로그인)을 거쳐야 함
                         .anyRequest().authenticated()
                 )

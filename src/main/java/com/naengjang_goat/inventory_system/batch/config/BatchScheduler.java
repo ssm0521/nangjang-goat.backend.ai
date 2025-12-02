@@ -18,7 +18,7 @@ public class BatchScheduler {
     @Scheduled(cron = "0 0 3 * * *")
     public void run() {
         try {
-            jobLauncher.run(kamisPriceJob, BatchTimestampParams.now());
+            jobLauncher.run(kamisPriceJob, com.naengjang_goat.inventory_system.batch.config.BatchTimestampParams.now());
         } catch (Exception e) {
             log.error("[KAMIS-BATCH] Scheduler Error", e);
         }
