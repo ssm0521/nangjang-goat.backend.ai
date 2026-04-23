@@ -37,3 +37,11 @@ out/
 .vscode/
 .env
 *.properties
+
+### Python (crawler) ###
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+crawler/**/debug_*.html
